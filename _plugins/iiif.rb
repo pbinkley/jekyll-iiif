@@ -25,7 +25,7 @@ class IIIFTag < Liquid::Tag
   id: "openseadragon1",
   minZoomImageRatio: 1,
   prefixUrl: "osd/images/",
-  tileSources: "#{ lookup(context, @image) }/info.json",
+  tileSources: "tiles\/#{ lookup(context, @image) }/info.json",
   crossOriginPolicy: false});
         }
         window.onload = initOpenSeadragon;
