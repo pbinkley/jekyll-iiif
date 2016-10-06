@@ -3,6 +3,8 @@ Jekyll plugin to embed static IIIF images in jekyll pages
 
 This is a first stab at a [Jekyll](https://jekyllrb.com/) plugin that generates static tiles and a IIIF [Image API](http://iiif.io/api/image/2.1/) ```info.json``` file for images that will be displayed in the Jekyll site. It uses [zimeon](https://github.com/zimeon/)'s ```iiif_static.py``` script (part of his [IIIF Image API Python library](https://github.com/zimeon/iiif) and incorporates the [OpenSeadragon](https://openseadragon.github.io/) viewer.
 
+Demo: [Council of Constance](https://www.wallandbinkley.com/projects/2016/jekyll-iiif-demo/)
+
 To use it:
 
 - Install [Jekyll](https://jekyllrb.com/)
