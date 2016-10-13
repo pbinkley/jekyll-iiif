@@ -1,0 +1,2 @@
+require 'iiif'
+require 'generatetiles'
