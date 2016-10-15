@@ -1,4 +1,19 @@
+require 'find'
+
 Jekyll::Hooks.register :site, :pre_render do |site|
+
+	# if there is no iiif_viewer dir in jekyll source, copy from plugin lib
+    unless File.directory?(site.source + "/iiif_viewer")
+	    spec = Gem::Specification.find_by_name("jekyll-iiif")
+	    lib_path = spec.full_gem_path() + "/lib"
+    	Find.find(lib_path + "/iiif_viewer") do |file|
+    		if File.file?(file)
+	    		# get relative path from site.source
+	    		file = Pathname(file[lib_path.length..-1])
+    			site.static_files << Jekyll::StaticFile.new(site, lib_path, file.dirname.to_s, file.basename.to_s)
+    		end
+    	end
+	end
 
 	iiif_static = site.config["iiif_static"]
 

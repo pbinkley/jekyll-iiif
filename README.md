@@ -15,7 +15,6 @@ To use it:
 		```gem 'jekyll-iiif', :git => 'https://github.com/pbinkley/jekyll-iiif.git'```
 	- Run ```bundle install``` to install the gem. If necessary, install ```bundler``` with ```gem install bundler```.
 	- Create a directory ```_iiif``` and put source images in it (nice big high-resolution images are best, to show off what IIIF can do)
-	- Copy the contents of the ```iiif/third_party/openseadragon200``` directory from the IIIF Image API Python library into a directory ```osd``` in your Jekyll instance
 	- Edit your ```_config.yaml``` to provide the full path to the ```iiif_static.py``` script, with a line like:
 
 		```iiif_static: /full/path/to/iiif_static.py```

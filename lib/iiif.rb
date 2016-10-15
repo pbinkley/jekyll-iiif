@@ -19,14 +19,14 @@ class IIIFTag < Liquid::Tag
     @@instance += 1
     if @@instance == 1
       topper = <<-TOPPER.strip 
-<script src="osd/openseadragon.min.js"></script>
+<script src="iiif_viewer/openseadragon.min.js"></script>
 <script>
 //<![CDATA[
-var osdfuncs = [];
+var iiif_viewerfuncs = [];
 window.onload = function() {
-  var arrayLength = osdfuncs.length;
+  var arrayLength = iiif_viewerfuncs.length;
   for (var i = 0; i < arrayLength; i++) {
-    osdfuncs[i]();
+    iiif_viewerfuncs[i]();
   }
 }
 //]]
@@ -40,12 +40,12 @@ window.onload = function() {
 <div id="openseadragon#{ @@instance }" class="openseadragon"></div>  
 <script>
 //<![CDATA[
-osdfuncs.push(
+iiif_viewerfuncs.push(
   function initOpenSeadragon#{ @@instance }() {
     OpenSeadragon({
       id: "openseadragon#{ @@instance }",
       minZoomImageRatio: 1,
-      prefixUrl: "osd/images/",
+      prefixUrl: "iiif_viewer/images/",
       tileSources: "tiles\/#{ lookup(context, @image) }/info.json",
       crossOriginPolicy: false
     });
