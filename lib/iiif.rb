@@ -1,5 +1,6 @@
 class IIIFTag < Liquid::Tag
   @@instance = 0
+
   def initialize(tag_name, image, tokens)
     super
     @image = image.strip
@@ -16,44 +17,40 @@ class IIIFTag < Liquid::Tag
   end
 
   def render(context)
+
     @@instance += 1
-    if @@instance == 1
-      topper = <<-TOPPER.strip 
-<script src="iiif_viewer/openseadragon.min.js"></script>
-<script>
-//<![CDATA[
-var iiif_viewerfuncs = [];
-window.onload = function() {
-  var arrayLength = iiif_viewerfuncs.length;
-  for (var i = 0; i < arrayLength; i++) {
-    iiif_viewerfuncs[i]();
-  }
-}
-//]]
-</script>
-      TOPPER
+    thisinstance = @@instance
+    thisimage = lookup(context, @image)
+    if thisinstance == 1
+      partial = get_include(context, "iiif_topper")
+      topper = partial.render!(context)
     else
       topper = ""
     end
-    <<-MARKUP.strip
-    #{ topper }
-<div id="openseadragon#{ @@instance }" class="openseadragon"></div>  
-<script>
-//<![CDATA[
-iiif_viewerfuncs.push(
-  function initOpenSeadragon#{ @@instance }() {
-    OpenSeadragon({
-      id: "openseadragon#{ @@instance }",
-      minZoomImageRatio: 1,
-      prefixUrl: "iiif_viewer/images/",
-      tileSources: "tiles\/#{ lookup(context, @image) }/info.json",
-      crossOriginPolicy: false
-    });
-  }
-)
-//]]>
-</script>
-    MARKUP
+      partial = get_include(context, "iiif_instance")
+    # TODO make context available to render, so we don't have to pass
+    # specific variables
+    instance = partial.render ({'thisimage' => thisimage, 'thisinstance' => thisinstance})
+    topper + instance
+  end
+
+  def get_include(context, name)
+    gem_lib_path = Gem::Specification.find_by_name("jekyll-iiif").full_gem_path() + "/lib/_includes"
+    jekyll_lib_path = context.registers[:site].source + "/_includes"
+    if File.file?(jekyll_lib_path + "/" + name + ".html")
+      lib_path = jekyll_lib_path
+    else
+      lib_path = gem_lib_path
+    end
+    Liquid::Template.parse(read_file(lib_path + "/" + name + ".html", context))
+  end
+
+  def read_file(file, context)
+    File.read(file, file_read_opts(context))
+  end
+
+  def file_read_opts(context)
+    context.registers[:site].file_read_opts
   end
 end
 

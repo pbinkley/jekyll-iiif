@@ -1,0 +1,17 @@
+<h2>{{ thisinstance }}. {{ thisimage }}</h2>
+<div id="openseadragon{{ thisinstance }}" class="openseadragon"></div>  
+<script>
+//<![CDATA[
+iiif_viewerfuncs.push(
+  function initOpenSeadragon{{ thisinstance }}() {
+    OpenSeadragon({
+      id: "openseadragon{{ thisinstance }}",
+      minZoomImageRatio: 1,
+      prefixUrl: "iiif_viewer/images/",
+      tileSources: "tiles/{{ thisimage }}/info.json",
+      crossOriginPolicy: false
+    });
+  }
+)
+//]]>
+</script>

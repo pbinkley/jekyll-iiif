@@ -1,0 +1,12 @@
+<script src="iiif_viewer/openseadragon.min.js"></script>
+<script>
+//<![CDATA[
+var iiif_viewerfuncs = [];
+window.onload = function() {
+  var arrayLength = iiif_viewerfuncs.length;
+  for (var i = 0; i < arrayLength; i++) {
+    iiif_viewerfuncs[i]();
+  }
+}
+//]]
+</script>
