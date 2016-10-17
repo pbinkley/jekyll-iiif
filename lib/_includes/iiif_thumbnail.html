@@ -1,0 +1,21 @@
+<div id="openseadragonthumb{{ page.thisinstance }}" class="openseadragonthumb" onclick="window.location.href='{{ site.baseurl }}/iiif_collection/{{ page.thisimage }}.html'"></div>
+
+<script>
+//<![CDATA[
+iiif_viewerfuncs.push(
+  function initOpenSeadragon{{ page.thisinstance }}() {
+    OpenSeadragon({
+      id: "openseadragonthumb{{ page.thisinstance }}",
+      minZoomImageRatio: 1,
+      prefixUrl: "{{ site.baseurl }}/iiif_viewer/images/",
+      tileSources: "{{ site.baseurl }}/tiles/{{ page.thisimage }}/info.json",
+      crossOriginPolicy: false,
+      panHorizontal: false,
+      panVertical: false,
+      zoomPerClick: 1.0,
+      showNavigationControl: false
+    });
+  }
+)
+//]]>
+</script>

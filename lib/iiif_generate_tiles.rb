@@ -29,16 +29,11 @@ Jekyll::Hooks.register :site, :pre_render do |site|
 			# we need to insert "tiles/" into the @id in info.json
 			# so that OpenSeadragon will build correct paths
 			#puts "Fix info.json"
-
-# load the file as a string
-data = File.read("tiles/" + basename + "/info.json") 
-# globally substitute "install" for "latest"
-data.gsub!(/\"\@id\"\: \"/, '"@id": "tiles/') 
-# open the file for writing
-File.open("tiles/" + basename + "/info.json", "w") do |f|
-  f.write(data)
-end
-
+			data = File.read("tiles/" + basename + "/info.json") 
+			data.gsub!(/\"\@id\"\: \"/, '"@id": "' + site.baseurl + '/tiles/') 
+			File.open("tiles/" + basename + "/info.json", "w") do |f|
+			  f.write(data)
+			end
 		end
 	end
 end

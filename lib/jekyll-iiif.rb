@@ -1,2 +1,5 @@
 require 'iiif'
-require 'generatetiles'
+require 'iiif_image'
+require 'iiif_gallery'
+require 'iiif_generate_tiles'
+require 'iiif_collection_pages'
