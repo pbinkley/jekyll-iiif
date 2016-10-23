@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'jekyll-iiif'
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.date        = '2016-10-08'
   s.summary     = "Jekyll plugin to embed static IIIF images in jekyll pages"
   s.description = "First stab at using static_iiif.py to generate static tiles, and provide a liquid tag to embed IIIF images in Jekyll pages."
