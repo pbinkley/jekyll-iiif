@@ -9,7 +9,7 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 			target = "_iiif_collection/" + basename + ".md"
 			if !File.exist?(target)
 				Jekyll.logger.info("IIIF:","Creating " + target)
-				File.open(target, 'w') { |file| file.write("---\ntitle: " + basename + "\niiif_image: " + basename + "\n---\n\n") }
+				File.open(target, 'w') { |file| file.write("---\ntitle: '" + basename + "'\niiif_image: '" + basename + "'\n---\n\n") }
 			end
 		end
 	end
