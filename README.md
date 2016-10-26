@@ -30,6 +30,8 @@ To use it:
 		}
 		```
 
+	If, like me, you got ambushed by Jekyll 3.3's new Themes feature and can't figure out where the css is, check the docs.
+
 ## Single image
 
 To serve a single image, create a Markdown page such as ```iiif.md```, containing a yaml header and a call to the ```iiif``` plugin, like this:
@@ -105,17 +107,17 @@ layout: default
 
 The important thing is that the layout contain the ```{% iiif %}``` tag, which will trigger the display of the image that is specified in the page's ```iiif_image``` yaml tag.
 
-- create a directory ```_iiif_collection``` (note the leading underscore). This will contain the pages corresponding to the images in ```_iiif``` (e.g. image ```page001.tiff``` needs a file ```page001.md```). Files will be created by ```jekyll-iiif``` for any image that doesn't already have one, so it's easy to create the necessary skeleton pages and then edit them as needed. The default skeleton pages just contain the yaml header, populated with the filename:
+- A directory ```_iiif_collection``` (note the leading underscore) will be created if it doesn't exist. This will contain the pages corresponding to the images in ```_iiif``` (e.g. image ```page001.tiff``` needs a file ```page001.md```). Files will be created by ```jekyll-iiif``` for any image that doesn't already have one, so it's easy to create the necessary skeleton pages and then edit them as needed. The default skeleton pages just contain the yaml header, populated with the filename:
 
 ```
 ---
-title: page001
-iiif_image: page001
+title: 'page001'
+iiif_image: 'page001'
 ---
 
 ```
 
-This file could be modified to provide the proper title, add text to be displayed under the IIIF viewer, or anything else Jekyll can do.
+This file can be modified to provide the proper title, add text to be displayed under the IIIF viewer, or anything else Jekyll can do.
 
 A page of thumbnails can be generated using the ```iiif_gallery``` tag. For example, the ```index.md``` might include ```{% iiif_gallery %}```. Each image is represented by a thumbnail (actually a IIIF viewer instance with pan and zoom disabled); the formatting is controlled by CSS applied to the ```div.iiif_thumbnail```. (As with the main image display you'll want to add width and height at least, to make the div visible.) Clicking a thumbnail will take you to the collection page for that image.
 
