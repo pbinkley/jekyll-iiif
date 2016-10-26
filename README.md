@@ -13,8 +13,7 @@ To use it:
 - Within that Jekyll instance:
 	- Create a Gemfile if there isn't one there already, and add to it:
 		```gem 'jekyll-iiif', :git => 'https://github.com/pbinkley/jekyll-iiif.git'```
-	- Add the gem to your ```_config.yml```: ```gems: [jekyll-iiif]
-```
+	- Add the gem to your ```_config.yml```: ```gems: [jekyll-iiif]```
 	- Run ```bundle install``` to install the gem. If necessary, install ```bundler``` with ```gem install bundler```.
 	- Create a directory ```_iiif``` and put source images in it (nice big high-resolution images are best, to show off what IIIF can do)
 	- Edit your ```_config.yaml``` to provide the full path to the ```iiif_static.py``` script, with a line like:
