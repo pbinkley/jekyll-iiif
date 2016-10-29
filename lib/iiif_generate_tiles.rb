@@ -1,4 +1,5 @@
 require 'find'
+require 'iiif_s3'
 
 Jekyll::Hooks.register :site, :pre_render do |site|
 
@@ -15,25 +16,28 @@ Jekyll::Hooks.register :site, :pre_render do |site|
     	end
 	end
 
-	iiif_static = site.config["iiif_static"]
-
 	FileUtils::mkdir_p 'tiles'
 
-	imagefiles = Dir["_iiif/*"].sort!
+	imagedata = []
+
+	imagefiles = Dir["./_iiif/*"].sort!
 	imagefiles.each do |image|
-		extension = File.extname(image).sub(/^\./) {""}
 		basename = File.basename(image, ".*")
 
-		if !File.exist?("tiles/" + basename)
-			system iiif_static + " -d tiles " + image
-			# we need to insert "tiles/" into the @id in info.json
-			# so that OpenSeadragon will build correct paths
-			#puts "Fix info.json"
-			data = File.read("tiles/" + basename + "/info.json") 
-			data.gsub!(/\"\@id\"\: \"/, '"@id": "' + site.baseurl + '/tiles/') 
-			File.open("tiles/" + basename + "/info.json", "w") do |f|
-			  f.write(data)
-			end
-		end
+		imagedata.push(IiifS3::ImageRecord.new({
+			:id => basename, 
+			# :label => "This is the label", 
+			# :description => "This is the description", 
+			# :attribution => "This is the attribution", 
+			# :logo => "http://www.wallandbinkley.com/logo.jpg", 
+			:path => image
+		}))
 	end
+	#Jekyll.logger.info("IIIF_S3:", JSON.pretty_generate(site))
+	builder = IiifS3::Builder.new({
+		:base_url => "http://127.0.0.1:4000" + site.baseurl + "/tiles",
+		:output_dir => "./tiles"
+	})
+	builder.load(imagedata)
+	builder.process_data()
 end
