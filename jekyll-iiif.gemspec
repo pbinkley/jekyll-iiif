@@ -3,11 +3,13 @@ Gem::Specification.new do |s|
   s.version     = '0.0.4'
   s.date        = '2016-10-29'
   s.summary     = "Jekyll plugin to embed static IIIF images in jekyll pages"
-  s.description = "First stab at using static_iiif.py to generate static tiles, and provide a liquid tag to embed IIIF images in Jekyll pages."
+  s.description = "Using IIIF_S3, it generates static IIIF tiles and other artefacts and provides Liquid tags to embed them in Jekyll pages."
   s.authors     = ["Peter Binkley"]
   s.email       = 'peter.binkley@ualberta.ca'
-  s.files       = ["lib/generatetiles.rb", "lib/iiif.rb"]
+  s.files       = Dir.glob("{lib}/**/*") + %w(LICENSE README.md)
   s.homepage    =
     'https://github.com/pbinkley/jekyll-iiif'
   s.license       = 'Apache 2.0'
+  s.requirements = "imagemagick (required by iiif_s3)"
+  s.add_dependency 'iiif_s3'
 end

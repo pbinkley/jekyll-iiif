@@ -1,72 +1,55 @@
 # jekyll-iiif
 Jekyll plugin to embed static IIIF images in jekyll pages
 
-This is a first stab at a [Jekyll](https://jekyllrb.com/) plugin that generates static tiles and a IIIF [Image API](http://iiif.io/api/image/2.1/) ```info.json``` file for images that will be displayed in the Jekyll site. It uses [zimeon](https://github.com/zimeon/)'s ```iiif_static.py``` script (part of his [IIIF Image API Python library](https://github.com/zimeon/iiif) and incorporates the [OpenSeadragon](https://openseadragon.github.io/) viewer.
+This is a first stab at a [Jekyll](https://jekyllrb.com/) plugin that generates static tiles and a IIIF [Image API](http://iiif.io/api/image/2.1/) ```info.json``` file for images that will be displayed in the Jekyll site. It uses [iiif_s3](https://github.com/cmoa/iiif_s3) and incorporates the [OpenSeadragon](https://openseadragon.github.io/) viewer. (For the time being it installs ```iiif_s3``` from [my fork](https://github.com/pbinkley/iiif_s3), but I'll point it back at the source repo as soon as possible.)
 
 Demo: [Council of Constance](https://www.wallandbinkley.com/projects/2016/jekyll-iiif-demo/)
 
 To use it:
 
 - Install [Jekyll](https://jekyllrb.com/)
-- Install the [IIIF Image API Python library](https://github.com/zimeon/iiif), somewhere on the same machine
 - Create a Jekyll instance with ```jekyll new```
-- Within that Jekyll instance:
+- Within your Jekyll instance:
 	- Create a Gemfile if there isn't one there already, and add to it:
-		```gem 'jekyll-iiif', :git => 'https://github.com/pbinkley/jekyll-iiif.git'```
-	- Add the gem to your ```_config.yml```: ```gems: [jekyll-iiif]```
-	- Run ```bundle install``` to install the gem. If necessary, install ```bundler``` with ```gem install bundler```.
+
+		```
+		gem 'jekyll-iiif', :github => 'pbinkley/jekyll-iiif'
+		gem 'iiif_s3', :github => 'pbinkley/iiif_s3'
+		```
+
+	- Add the jekyll-iiif gem to the ```_config.yml```: ```gems: [jekyll-iiif]``` or add ```- jekyll-iiif``` to an existing list of gems
+	- Run ```bundle install``` to install the gem and dependencies. If necessary, install ```bundler``` with ```gem install bundler```.
 	- Create a directory ```_iiif``` and put source images in it (nice big high-resolution images are best, to show off what IIIF can do)
-	- Edit your ```_config.yaml``` to provide the full path to the ```iiif_static.py``` script, with a line like:
-
-		```iiif_static: /full/path/to/iiif_static.py```
-
-	- Edit the Jekyll css to add a section like this, so that your OpenSeadragon viewer will have width and height (otherwise it will be invisible):
-
-		```
-		.openseadragon {
-			width: 100%;
-			height: 500px;
-		}
-		```
-
-	If, like me, you got ambushed by Jekyll 3.3's new Themes feature and can't figure out where the css is, check the docs.
 
 ## Single image
 
 To serve a single image, create a Markdown page such as ```iiif.md```, containing a yaml header and a call to the ```iiif``` plugin, like this:
 
-	```
-	---
-	title: jekyll-iiif demo
-	---
+```
+---
+title: jekyll-iiif demo
+---
 
-	{% iiif imagename %}
-	```
+{% iiif imagename %}
+```
 
 (Using the base name, without file extension, of one of the images you put in the ```_iiif``` directory) 
 
-Render and serve the site with ```jekyll s```. You should see the output of the ```iiif_static.py``` script as it generates the tiles, something like:
+Render and serve the site with ```jekyll s```. Tiles and IIIF artefacts will be generated for images that need them.
 
-	```
-      Generating... 
-	. / 00cover/0,0,512,512/512,/0/default.jpg
-	. / 00cover/0,512,512,512/512,/0/default.jpg
-	. / 00cover/0,1024,512,512/512,/0/default.jpg
-	. / 00cover/0,1536,512,512/512,/0/default.jpg
-	. / 00cover/0,2048,512,512/512,/0/default.jpg
-	...
-	```
-Tiles are stored in a directory at ```tiles/<filename>```, which will be copied to the Jekyll site as static files. Tiles are only generated if their target directory doesn't already exist. To force tiles to be regenerated, therefore, just delete the ```tiles``` directory or the subdirectory for a given image.
+Tiles are stored in a directory at ```tiles/images/<filename>```, and will be copied to the Jekyll site as static files. Tiles are only generated if their target directory doesn't already exist. To force tiles to be regenerated, therefore, just delete the ```tiles```.
 
-Visit the page at [http://127.0.0.1:4000/iiif.html](http://127.0.0.1:4000/iiif.html). You should see your image displayed by OpenSeadragon in a deeply-zoomable tiled IIIF display
+Visit the page at [http://127.0.0.1:4000/iiif.html](http://127.0.0.1:4000/iiif.html). You should see your image displayed by OpenSeadragon in a deeply-zoomable tiled IIIF display. (There's a bug which may cause the ```info.json``` not to be found. If you don't see your image, close the Jekyll server with \^C and start it again.)
 
-Instead of specifying the image name in the iiif call, you can put in the page yaml header as "iiif_image: imagename" (again without the filename extension), and invoke it with ```{% iiif %}```. 
+Instead of specifying the image name in the iiif call, you can put it in the page yaml header as "iiif_image: imagename" (again without the filename extension), and invoke it with ```{% iiif %}```. 
 
 A page can include more than one IIIF image.
 
+The size of the IIIF viewer div is hardcoded in ```lib/_includes/iiif_instance.html``` as ```width: 100%; height: 500px```. It can be overriden by overriding ```iiif_instance.html```, or simply by applying css rules to ```div.iiif_instance```.
+
 ## Collection
 
-You can have jekyll-iiif generate pages for a [Collection](https://jekyllrb.com/docs/collections/) based one-to-one on the images you provide. 
+You can have jekyll-iiif generate pages for a [Collection](https://jekyllrb.com/docs/collections/) based one-to-one on the images you provide. The idea is to make it easy to publish a set of images with minimal overhead: you can drop all the images in the ```_iiif``` directory, and the necessary skeleton pages will be created for you. You can then edit those pages as needed.
 
 To generate and render a page for each image:
 
@@ -84,7 +67,7 @@ defaults:
       layout: iiif_image
 ```
 
-- notice that the collection uses ```iiif_image```; you need to create this layout in ```_layouts/iiif_image.html```:
+- notice that the collection uses layout ```iiif_image```; you need to create this in ```_layouts/iiif_image.html```:
 
 ```
 ---
@@ -104,9 +87,11 @@ layout: default
 </article>
 ```
 
-The important thing is that the layout contain the ```{% iiif %}``` tag, which will trigger the display of the image that is specified in the page's ```iiif_image``` yaml tag.
+The important thing is that the layout must contain the ```{% iiif %}``` tag, which will trigger the display of the image that is specified in the page's ```iiif_image``` yaml tag.
 
-- A directory ```_iiif_collection``` (note the leading underscore) will be created if it doesn't exist. This will contain the pages corresponding to the images in ```_iiif``` (e.g. image ```page001.tiff``` needs a file ```page001.md```). Files will be created by ```jekyll-iiif``` for any image that doesn't already have one, so it's easy to create the necessary skeleton pages and then edit them as needed. The default skeleton pages just contain the yaml header, populated with the filename:
+When you start the server again, you can visit the collection at [http://127.0.0.1:4000/iiif_collection/](http://127.0.0.1:4000/iiif_collection/)
+
+A directory ```_iiif_collection``` (note the leading underscore) will be created if it doesn't exist. This will contain the pages corresponding to the images in ```_iiif``` (e.g. image ```page001.tiff``` needs a file ```page001.md```). Files will be created by ```jekyll-iiif``` for any image that doesn't already have one, so it's easy to create the necessary skeleton pages and then edit them as needed. The default skeleton pages just contain the yaml header, populated with the filename:
 
 ```
 ---
@@ -116,15 +101,14 @@ iiif_image: 'page001'
 
 ```
 
-This file can be modified to provide the proper title, add text to be displayed under the IIIF viewer, or anything else Jekyll can do.
+This file can be modified to provide the proper title, add text to be displayed under the IIIF viewer, or anything else Jekyll can do. The file won't be overwritten.
 
-A page of thumbnails can be generated using the ```iiif_gallery``` tag. For example, the ```index.md``` might include ```{% iiif_gallery %}```. Each image is represented by a thumbnail (actually a IIIF viewer instance with pan and zoom disabled); the formatting is controlled by CSS applied to the ```div.iiif_thumbnail```. (As with the main image display you'll want to add width and height at least, to make the div visible.) Clicking a thumbnail will take you to the collection page for that image.
+A page of thumbnails for the images in the collection can be generated using the ```iiif_gallery``` tag. For example, ```gallery.md``` might include ```{% iiif_gallery %}```. Each image is represented by a thumbnail; the formatting is controlled by CSS applied to ```div.iiif_thumbnail```. Clicking a thumbnail will take you to the collection page for that image.
 
 ## Next steps
 
-- use [iiif_s3](https://github.com/cmoa/iiif_s3) to generate the static tiles, so that an external installation of the Python library will be unnecessary
-- ennable multiple collections, based on subdirectories in the ```_iiif``` folder
-- generate [Presentation API manifests](http://iiif.io/api/presentation/2.0/#manifest) for collections, to allow the publication of an IIIF object that can viewed in external viewers
+- fix the bug that sometimes requires restarting the server to get all content deployed to ```_site```
+- enable multiple collections, based on subdirectories in the ```_iiif``` folder
+- enable populating the [Presentation API manifests](http://iiif.io/api/presentation/2.0/#manifest) that IIIF_S3 generates with metadata for the collection, to allow the publication of an IIIF object that can viewed in external viewers
 - develop ```_include``` files for other IIIF viewers beside OpenSeadragon
-- provide thumbnail images that don't require a IIIF viewer instance
-
+- explore using Jekyll theme to make it easier to use default _includes or override them
