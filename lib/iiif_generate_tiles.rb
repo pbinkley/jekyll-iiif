@@ -33,9 +33,10 @@ Jekyll::Hooks.register :site, :pre_render do |site|
 			:path => image
 		}))
 	end
-	#Jekyll.logger.info("IIIF_S3:", JSON.pretty_generate(site))
+	Jekyll.logger.info("IIIF_S3:", site.config["url"].inspect)
 	builder = IiifS3::Builder.new({
-		:base_url => "http://127.0.0.1:4000" + site.baseurl + "/tiles",
+#		:base_url => "http://127.0.0.1:4000" + site.baseurl + "/tiles",
+		:base_url => site.config["url"] + site.baseurl + "/tiles",
 		:output_dir => "./tiles"
 	})
 	builder.load(imagedata)
