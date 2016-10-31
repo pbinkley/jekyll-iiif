@@ -39,7 +39,7 @@ Render and serve the site with ```jekyll s```. Tiles and IIIF artefacts will be 
 
 Tiles are stored in a directory at ```tiles/images/<filename>```, and will be copied to the Jekyll site as static files. Tiles are only generated if their target directory doesn't already exist. To force tiles to be regenerated, therefore, just delete the ```tiles```.
 
-Visit the page at [http://127.0.0.1:4000/iiif.html](http://127.0.0.1:4000/iiif.html). You should see your image displayed by OpenSeadragon in a deeply-zoomable tiled IIIF display. (There's a bug which may cause the ```info.json``` not to be found. If you don't see your image, close the Jekyll server with \^C and start it again.)
+Visit the page at [http://127.0.0.1:4000/iiif.html](http://127.0.0.1:4000/iiif.html). You should see your image displayed by OpenSeadragon in a deeply-zoomable tiled IIIF display.
 
 Instead of specifying the image name in the iiif call, you can put it in the page yaml header as "iiif_image: imagename" (again without the filename extension), and invoke it with ```{% iiif %}```. 
 

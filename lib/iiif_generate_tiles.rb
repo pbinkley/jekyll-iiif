@@ -1,7 +1,7 @@
 require 'find'
 require 'iiif_s3'
 
-Jekyll::Hooks.register :site, :pre_render do |site|
+Jekyll::Hooks.register :site, :after_reset do |site|
 
 	# if there is no iiif_viewer dir in jekyll source, copy from plugin lib
     unless File.directory?(site.source + "/iiif_viewer")
@@ -24,6 +24,7 @@ Jekyll::Hooks.register :site, :pre_render do |site|
 	imagefiles.each do |image|
 		basename = File.basename(image, ".*")
 
+		# TODO populate values for :label etc. from _config.yml
 		imagedata.push(IiifS3::ImageRecord.new({
 			:id => basename, 
 			# :label => "This is the label", 
@@ -33,10 +34,14 @@ Jekyll::Hooks.register :site, :pre_render do |site|
 			:path => image
 		}))
 	end
-	Jekyll.logger.info("IIIF_S3:", site.config["url"].inspect)
+	site.config['env'] = ENV['JEKYLL_ENV'] || 'development'
+	hosturl = "http://127.0.0.1:4000"
+	if site.config["env"] == "production"
+		hosturl = site.config["url"]
+	end
+	Jekyll.logger.info("Host:", hosturl)
 	builder = IiifS3::Builder.new({
-#		:base_url => "http://127.0.0.1:4000" + site.baseurl + "/tiles",
-		:base_url => site.config["url"] + site.baseurl + "/tiles",
+		:base_url => hosturl + site.baseurl + "/tiles",
 		:output_dir => "./tiles"
 	})
 	builder.load(imagedata)
