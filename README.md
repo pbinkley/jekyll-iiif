@@ -98,17 +98,34 @@ A directory ```_iiif_collection``` (note the leading underscore) will be created
 title: 'page001'
 iiif_image: 'page001'
 ---
-
 ```
 
 This file can be modified to provide the proper title, add text to be displayed under the IIIF viewer, or anything else Jekyll can do. The file won't be overwritten.
 
 A page of thumbnails for the images in the collection can be generated using the ```iiif_gallery``` tag. For example, ```gallery.md``` might include ```{% iiif_gallery %}```. Each image is represented by a thumbnail; the formatting is controlled by CSS applied to ```div.iiif_thumbnail```. Clicking a thumbnail will take you to the collection page for that image.
 
+## Manifests
+
+Thanks to ```iiif_s3```, Presentation Manifests are created for each image. This allows external IIIF clients to import the item and display it. At the moment these manifests are created for each image individually; in a later release ```jekyll-iiif``` will use ```iiif_s3```'s ability to manage images as pages of an item, and produce a manifest at the collection level.
+
+To serve manifests to external clients it is necessary to at a [CORS header](http://enable-cors.org/index.html). In the jekyll development environment, this is achieved by adding this configuration to ```_config.yml```:
+
+```
+webrick:
+  headers:
+    "Access-Control-Allow-Origin": "*"
+```
+
+In a production Apache environment, add ```Header set Access-Control-Allow-Origin "*"``` to a ```.htaccess``` file in the root of the jekyll deployment.
+
+In either case you can find the manifest at ```tiles/<imagename>/manifest.json```. You can paste its url into a demo such as [Mirador](http://projectmirador.org/demo/): mouse over the four-square icon in a viewer menu bar and select "Replace Object", then paste the url of the manifest in the "Add new object from URL" box. Or, more easily, you can drag the IIIF logo from the gallery page to the Mirador demo, using [IIIF's drag-n-drop functionality](http://zimeon.github.io/iiif-dragndrop/).
+
+Note that the manifest must include absolute urls to all IIIF resources, since it will be used outside of the original site. This is awkward when moving between development and production jekyll environments. ```jekyll-iiif``` will use the default development host ```http://127.0.0.1:4000``` when building the manifest, unless the ```JEKYLL_ENV``` environment variable is set to "production". In that case it will use the ```url``` property set in ```_config.yml```. However, ```iiif_s3``` won't be aware of the change, and won't regenerate the manifests when the environment changes. When changing environments, therefore, it is currently necessary to delete the ```tiles``` directory to force the regeneration of all the tiles and manifests. 
+
 ## Next steps
 
-- fix the bug that sometimes requires restarting the server to get all content deployed to ```_site```
 - enable multiple collections, based on subdirectories in the ```_iiif``` folder
+- enable paged items in ```iiif_s3```
 - enable populating the [Presentation API manifests](http://iiif.io/api/presentation/2.0/#manifest) that IIIF_S3 generates with metadata for the collection, to allow the publication of an IIIF object that can viewed in external viewers
 - develop ```_include``` files for other IIIF viewers beside OpenSeadragon
 - explore using Jekyll theme to make it easier to use default _includes or override them
