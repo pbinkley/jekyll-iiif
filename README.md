@@ -87,7 +87,7 @@ layout: default
 </article>
 ```
 
-The important thing is that the layout must contain the ```{% iiif %}``` tag, which will trigger the display of the image that is specified in the page's ```iiif_image``` yaml tag.
+The important thing is that the layout must contain the ```{% iiif %}``` tag, which will trigger the display of the image that is specified in the page's ```iiif_image``` yaml tag. You can take advantage of the collection structure to provide [previous and next links](https://gist.github.com/budparr/3e637e575471401d01ec).
 
 When you start the server again, you can visit the collection at [http://127.0.0.1:4000/iiif_collection/](http://127.0.0.1:4000/iiif_collection/)
 
