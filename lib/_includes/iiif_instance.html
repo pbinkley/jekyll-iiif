@@ -1,14 +1,14 @@
-<div id="openseadragon{{ page.thisinstance }}" class="iiif_instance" 
-style="width: 100%; height: 500px"></div>
+<div id="openseadragon{{ page.instancecounter }}" class="iiif_instance" 
+style="width: 100%; height: 500px; border: 1px solid grey"></div>
 <script>
 //<![CDATA[
 iiif_viewerfuncs.push(
-  function initOpenSeadragon{{ page.thisinstance }}() {
+  function initOpenSeadragon{{ page.instancecounter }}() {
     OpenSeadragon({
-      id: "openseadragon{{ page.thisinstance }}",
+      id: "openseadragon{{ page.instancecounter }}",
       minZoomImageRatio: 1,
-      prefixUrl: "{{ site.baseurl }}/iiif_viewer/images/",
-      tileSources: "{{ site.baseurl }}/tiles/images/{{ page.thisimage }}-1/info.json",
+      prefixUrl: "{{ site.baseurl }}/iiif_viewer/openseadragon/images/",
+      tileSources: "{{ site.baseurl }}/tiles/images/{{ page.thisimage }}/info.json",
       crossOriginPolicy: false
     });
   }

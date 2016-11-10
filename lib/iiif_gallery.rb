@@ -1,25 +1,61 @@
 class IIIFGalleryTag < IIIF
 
+  # need to handle case of single pages for one-offs, and 
+  # a gallery page for a collection. Both should be optional. 
+  # Previous and next links should be optional.
+
+  # So: if no collection is named, do the one-offs, otherwise do the
+  # collection. 
+
   def initialize(tag_name, image, tokens)
     super
+    @image = image.strip
   end
+
 
   def render(context)
     images = ""
-    coll = context.registers[:site].collections["iiif_collection"]
-    coll.docs.each do |image|
-      Jekyll.logger.info("IIIF:", image.path)
-      # image has "_iiif/" prefix, which must be removed
-      basename = File.basename(image.path, ".*")
-      # get thumbnail link from tiles/<basename>/manifest.json
-      manifest = JSON.parse(File.read("./tiles/" + basename + "/manifest.json"))
-      thumbnail = manifest["thumbnail"]
-      context.registers[:page]["thumbnail"] = thumbnail
-      context.registers[:page]["thistitle"] = image.data["title"]
-      images += render_instance(basename, "iiif_thumbnail", context)
+    label = @image
+    site = context.registers[:site]
+    coll = site.collections[label]
+    if coll 
+      if coll.metadata["paged"]
+        docs = {}
+        coll.docs.each do |doc|
+          docs[File.basename(doc.path, ".*")] = doc
+        end
+        manifest = "./tiles/" + label + "/manifest.json"
+        manifest = JSON.parse(File.read(manifest))
+        manifest["sequences"][0]["canvases"].each do |canvas|
+          basename = File.basename(canvas["images"][0]["resource"]["service"]["@id"], ".*")
+          if basename != "index"
+            doc = docs[basename]
+            images += render_gallery(context, basename, manifest["@id"], label, doc, canvas)
+          end
+        end
+      else
+        coll.docs.each do |doc|
+          basename = File.basename(doc.path, ".*")
+          if basename != "index"
+            manifest = "tiles/" + basename + "/manifest.json"
+            manifest = JSON.parse(File.read(manifest))
+            canvas = manifest["sequences"][0]["canvases"][0]
+            images += render_gallery(context, basename, manifest["@id"], label, doc, canvas)
+          end
+        end
+      end
+      images
     end
-    images
   end
+end
+
+def render_gallery(context, basename, manifestid, label, doc, canvas)
+  context.registers[:page]["canvas"] = canvas["@id"]
+  context.registers[:page]["thumbnail"] = canvas["thumbnail"]
+  context.registers[:page]["manifest"] = manifestid
+  context.registers[:page]["thistitle"] = doc.data["title"]
+  context.registers[:page]["thiscollection"] = label
+  render_instance(basename, "iiif_thumbnail", context)
 end
 
 Liquid::Template.register_tag('iiif_gallery', IIIFGalleryTag)

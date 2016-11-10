@@ -1,9 +1,11 @@
-<div id="iiif_thumb{{ page.thisinstance }}" class="iiif_thumbnail" style="width: 100%; margin-bottom: 30px">
-  <a href="{{ site.baseurl }}/iiif_collection/{{ page.thisimage }}.html">
-    <img src="{{ page.thumbnail }}"/>
+<div id="iiif_thumb{{ page.instancecounter }}" class="iiif_thumbnail">
+
+  <a href="{{ site.baseurl }}/{{ page.thiscollection }}/{{ page.thisimage }}.html">
+    <img class="iiif_thumbnail" src="{{ page.thumbnail }}"/>
   </a>
-  <a href="{{ site.baseurl }}/iiif_collection/{{ page.thisimage }}.html?manifest={{ site.url }}{{ site.baseurl }}/tiles/{{ page.thisimage }}/manifest.json">
-    <img style="display: inline; vertical-align: bottom; width: 50px; height: 50px" src="{{ site.baseurl }}/iiif_viewer/International_Image_Interoperability_Framework_logo.png" alt="IIIF Drag-n-drop">
+<br/>
+  <a href="{{ site.baseurl }}/{{ page.thiscollection }}/{{ page.thisimage }}.html?manifest={{ page.manifest | url_encode }}&canvas={{ page.canvas | url_encode }}">
+    <img style="display: inline; vertical-align: bottom; width: 25px; height: 25px;" src="{{ site.baseurl }}/iiif_viewer/International_Image_Interoperability_Framework_logo.png" alt="IIIF Drag-n-drop">
   </a>
-  <p>{{ page.thistitle }}</p>
+{{ page.thistitle }}
 </div>

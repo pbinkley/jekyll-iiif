@@ -1,15 +1,35 @@
 Jekyll::Hooks.register :site, :after_reset do |site|
-
-	if site.collections["iiif_collection"]
-		FileUtils::mkdir_p '_iiif_collection'
-
-		imagefiles = Dir["_iiif/*"].sort!
-		imagefiles.each do |image|
-			basename = File.basename(image, ".*")
-			target = "_iiif_collection/" + basename + ".md"
-			if !File.exist?(target)
-				Jekyll.logger.info("IIIF:","Creating " + target)
-				File.open(target, 'w') { |file| file.write("---\ntitle: '" + basename + "'\niiif_image: '" + basename + "'\n---\n\n") }
+	for collection in site.collections
+		collname = collection[0]
+		collection = collection[1]
+		if collection.metadata["iiif"] && collection.metadata["output"]
+			label = collection.label
+			targetdir = "_" + label
+			FileUtils::mkdir_p targetdir
+			imagefiles = Dir["_iiif/" + label + "/*"].sort!
+			counter = 1
+			imagefiles.each do |image|
+				if File.file?(image)
+					# cases for image x:
+					#   member of paged collection y: imagename y-1, pagepath y-1
+					#   member of unpaged collection y: imagename x-1, pagepath x
+					basename = File.basename(image, ".*")
+					if collection.metadata["paged"]
+						imagename = label + "-" + counter.to_s.rjust(4, "0")
+						pagepath = targetdir + "/" + imagename + ".md"
+					else
+						imagename = basename + "-1"
+						pagepath = targetdir + "/" + basename + ".md"
+					end
+					if !File.exist?(pagepath)
+						File.open(pagepath, 'w') { |file| file.write("---\nlayout: iiif\ntitle: '" + basename + "'\niiif_image: '" + imagename + "'\n---\n\n") }
+					end
+					counter = counter + 1
+				end
+			end
+			pagepath = targetdir[1,targetdir.length-1]
+			if !File.exist?(pagepath + ".md")
+				File.open(pagepath + ".md", 'w') { |file| file.write("---\nlayout: page\ntitle: '" + label + " Gallery'\npermalink: " + pagepath + "/index.html\n---\n\n{% iiif_gallery " + label + " %}\n") }
 			end
 		end
 	end

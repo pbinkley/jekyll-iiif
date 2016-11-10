@@ -30,21 +30,27 @@ class IIIF < Liquid::Tag
   end
 
   def render_instance(image, template, context)
-    thisinstance = context.registers[:page]["thisinstance"] + 1 if context.registers[:page]["thisinstance"]
-    thisinstance = 1 if thisinstance == nil
+    instancecounter = context.registers[:page]["instancecounter"] + 1 if context.registers[:page]["instancecounter"]
+    instancecounter = 1 if instancecounter == nil
     thisimage = lookup(context, image)
-    if thisinstance == 1
+    if instancecounter == 1
       partial = get_include(context, "iiif_topper")
-      topper = partial.render!(context)
+      topper = partial.render(context)
     else
       topper = ""
     end
     partial = get_include(context, template)
-    # persist thisinstance in page hash - it will be overwritten by each subsequent IIIF instance on page
-    context.registers[:page]["thisinstance"] = thisinstance
+    # persist instancecounter in page hash - it will be overwritten by each subsequent IIIF instance on page
+    context.registers[:page]["instancecounter"] = instancecounter
     context.registers[:page]["thisimage"] = thisimage
     instance = partial.render(context)
     topper + instance
   end
+
+  def render_manifest(image, template, context)
+    partial = get_include(context, template)
+    partial.render(context)
+  end
+
 end
 

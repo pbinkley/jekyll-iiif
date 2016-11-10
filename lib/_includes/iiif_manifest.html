@@ -1,0 +1,26 @@
+<iframe title='Mirador' src='iiif_mirador.html' allowfullscreen='true' webkitallowfullscreen='true' mozallowfullscreen='true' style='width: 100%; height: 500px;' srcdoc="<link rel='stylesheet' type='text/css' href='iiif_viewer/mirador/css/mirador-combined.css'>
+<style>
+#viewer {
+	width: 100%; 
+	height: 500px
+}
+</style>
+<div id='viewer'></div>
+
+<script src='{{ site.baseurl }}/iiif_viewer/mirador/mirador.js'></script>
+<script type='text/javascript'>
+
+ $(function() {
+   Mirador({
+     'id': 'viewer',
+     'layout': '1x1',
+     'data': [ {{ page.iiif_collections }} ],
+     'windowObjects': [{
+     	'loadedManifest': '{{ site.url }}{{ site.baseurl }}/tiles/{{ page.thismanifest }}/manifest.json', 
+     	'viewType': 'BookView'
+
+     }],
+     'annotationEndpoint': { 'name':'Local Storage', 'module': 'LocalStorageEndpoint' }
+   });
+ });
+</script>"></iframe>

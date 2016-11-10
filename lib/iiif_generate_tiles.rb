@@ -20,30 +20,62 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 
 	imagedata = []
 
-	imagefiles = Dir["./_iiif/*"].sort!
-	imagefiles.each do |image|
-		basename = File.basename(image, ".*")
+	id_counter = 0
+	imagedirs = Dir["./_iiif/*"].sort!
+	imagedirs.each do |imagedir|
+		id_counter = id_counter + 1
+		collname = File.basename(imagedir, ".*")
 
-		# TODO populate values for :label etc. from _config.yml
-		imagedata.push(IiifS3::ImageRecord.new({
-			:id => basename, 
-			# :label => "This is the label", 
-			# :description => "This is the description", 
-			# :attribution => "This is the attribution", 
-			# :logo => "http://www.wallandbinkley.com/logo.jpg", 
-			:path => image
-		}))
+		# collection of images
+		imagefiles = Dir[imagedir + "/*"].sort!
+		counter = 1
+		imagefiles.each do |imagefile|
+			basename = File.basename(imagefile, ".*")
+
+			# TODO populate values for :label etc. from _config.yml
+			opts = {}
+			thiscoll = nil
+			site.collections.each do |coll|
+				thiscoll = coll if coll[0] == collname
+			end
+			if thiscoll == nil
+				Jekyll.logger.error("IIIF:", "Collection " + collname + " not found in _config.yml")
+			else
+				if thiscoll[1].metadata["paged"]
+					opts[:id] = collname
+					opts[:page_number] = counter.to_s.rjust(4, "0")
+					opts[:is_document] = false
+					opts[:is_primary] = counter == 1
+					opts[:section] = counter.to_s
+					opts[:section_label] = "p. " + counter.to_s
+
+					opts[:label] = "This is the label" 
+					opts[:description] = "This is the description" 
+					opts[:attribution] = "This is the attribution" 
+					opts[:logo] = "https://www.wallandbinkley.com/test.jpg" 
+					opts[:path] = imagefile
+				else
+					opts[:id] = basename
+					opts[:is_document] = true
+					opts[:path] = imagefile
+				end
+
+				i = IiifS3::ImageRecord.new(opts)
+				counter = counter + 1
+				imagedata.push(i)
+			end
+		end
 	end
 	site.config['env'] = ENV['JEKYLL_ENV'] || 'development'
 	hosturl = "http://127.0.0.1:4000"
 	if site.config["env"] == "production"
 		hosturl = site.config["url"]
 	end
-	Jekyll.logger.info("Host:", hosturl)
 	builder = IiifS3::Builder.new({
 		:base_url => hosturl + site.baseurl + "/tiles",
 		:output_dir => "./tiles"
 	})
 	builder.load(imagedata)
 	builder.process_data()
+
 end
