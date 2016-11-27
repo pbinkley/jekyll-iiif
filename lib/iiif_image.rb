@@ -6,7 +6,7 @@ class IIIFTag < IIIF
   end
 
   def render(context)
-    render_instance(@image, "iiif_instance", context)
+    render_instance(@image, "iiif_image", context)
   end
 end
 

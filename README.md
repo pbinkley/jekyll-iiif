@@ -70,7 +70,7 @@ Instead of specifying the image name in the ```iiif``` call, you can put it in t
 
 A page can include more than one IIIF image.
 
-The size of the IIIF viewer div is hardcoded in ```lib/_includes/iiif_instance.html``` as ```width: 100%; height: 500px```. It can be overriden by overriding ```iiif_instance.html``` (i.e. by making a modified copy in the ```_includes``` directory of your Jekyll instance), or simply by applying css rules to ```div.iiif_instance```.
+The size of the IIIF viewer div is hardcoded in ```lib/_includes/iiif_image.html``` as ```width: 100%; height: 500px```. It can be overriden by overriding ```iiif_image.html``` (i.e. by making a modified copy in the ```_includes``` directory of your Jekyll instance), or simply by applying css rules to ```div.iiif_image```.
 
 ## Collection
 

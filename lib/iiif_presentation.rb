@@ -25,8 +25,8 @@ class IIIFManifestTag < IIIF
     context.registers[:page]["iiif_collections"] = collections
     context.registers[:page]["thismanifest"] = @manifest
 
-    render_manifest(nil, "iiif_manifest", context)
+    render_manifest(nil, "iiif_presentation", context)
   end
 end
 
-Liquid::Template.register_tag('iiif_manifest', IIIFManifestTag)
+Liquid::Template.register_tag('iiif_presentation', IIIFManifestTag)
