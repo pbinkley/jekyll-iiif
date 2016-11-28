@@ -83,9 +83,10 @@ defaults:
       layout: iiif_image
 </code></pre>
 
-<pre><code>- set ```paged: true``` if the collection represents pages in a book; leave it out for loose, independent images.
-- when you build the Jekyll site, ```jekyll-iiif``` will create pages for each of the collections (see below).
-</code></pre>
+<ul>
+<li>set <code>paged: true</code> if the collection represents pages in a book; leave it out for loose, independent images.</li>
+<li>when you build the Jekyll site, <code>jekyll-iiif</code> will create pages for each of the collections (see below).</li>
+</ul>
 
 <h2>
 <a id="serve-single-image" class="anchor" href="#serve-single-image" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Serve single image</h2>
@@ -116,7 +117,7 @@ title: jekyll-iiif demo
 <h2>
 <a id="collection" class="anchor" href="#collection" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Collection</h2>
 
-<p>You can have jekyll-iiif generate pages for a <a href="https://jekyllrb.com/docs/collections/">Collection</a> based one-to-one on the images you provide. The idea is to make it easy to publish a set of images with minimal overhead: you can drop all the images in a subdirectory of the <code>_iiif</code> directory, and the necessary skeleton pages will be created for you. You can then edit those pages as needed.</p>
+<p>You can have <code>jekyll-iiif</code> generate pages for a <a href="https://jekyllrb.com/docs/collections/">Collection</a> based one-to-one on the images you provide. The idea is to make it easy to publish a set of images with minimal overhead: you can drop all the images in a subdirectory of the <code>_iiif</code> directory, and the necessary skeleton pages will be created for you. You can then edit those pages as needed.</p>
 
 <ul>
 <li>notice that the automatically generated pages use layout <code>iiif_image</code>; you need to create this as a file in <code>_layouts/iiif_image.html</code>:</li>
@@ -168,7 +169,7 @@ layout: default
 
 <p>When you start the server again, you can visit the collection at <a href="http://127.0.0.1:4000/iiif_collection/">http://127.0.0.1:4000/iiif_collection/</a></p>
 
-<p>A directory <code>_&lt;directoryname&gt;</code> (note the leading underscore) will be created for each collection if it doesn't already exist. This will contain the markdown files corresponding to the images in <code>_iiif</code> (e.g. image <code>page001.tiff</code> triggers a file <code>page001.md</code>). Files will be created by <code>jekyll-iiif</code> for any image that doesn't already have one, so it's easy to create the necessary skeleton pages and then edit them as needed. The default skeleton pages just contain the yaml header, populated with the filename:</p>
+<p>A directory <code>_&lt;directoryname&gt;</code> (note the leading underscore) will be created for each collection if it doesn't already exist. This will contain the markdown files corresponding to the images in <code>_iiif/&lt;directoryname&gt;</code> (e.g. image <code>page001.tiff</code> triggers a file <code>page001.md</code>). Files will be created by <code>jekyll-iiif</code> for any image that doesn't already have one, so it's easy to create the necessary skeleton pages and then edit them as needed. The default skeleton pages just contain the yaml header, populated with the filename:</p>
 
 <pre><code>---
 layout: iiif
@@ -177,7 +178,7 @@ iiif_image: 'iiif_collection-1'
 ---
 </code></pre>
 
-<p>(Note that the title is from the original image name, but the <code>iiif_image</code> uses the new name provided by <code>iiif_s3</code>, based on the collection name.) This markdown file can be modified to provide the proper title, add text to be displayed under the IIIF viewer, or anything else Jekyll can do. The file won't be overwritten by jekyll-iiif.</p>
+<p>(Note that the title is from the original image name, but the <code>iiif_image</code> uses the new name provided by <code>iiif_s3</code>, based on the collection name.) This markdown file can be modified to provide the proper title, add text to be displayed under the IIIF viewer, or anything else Jekyll can do. The file won't be overwritten by <code>jekyll-iiif</code>.</p>
 
 <p>A page of thumbnails for the images in the collection can be generated using the <code>iiif_gallery</code> tag. One is generated automatically for each collection, providing the <code>index.html</code> in the collection directory. Each image is represented by a thumbnail; the formatting can be controlled by CSS applied to <code>div.iiif_thumbnail</code>. Clicking a thumbnail will take you to the page for that image. Each thumbnail is accompanied by a IIIF logo, which supports <a href="http://zimeon.github.io/iiif-dragndrop/">drag-and-drop</a> to another IIIF viewer.</p>
 
