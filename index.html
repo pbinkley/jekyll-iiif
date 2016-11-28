@@ -97,7 +97,7 @@ defaults:
 title: jekyll-iiif demo
 ---
 
-{% raw %}{% iiif &lt;imagename&gt; %}{% endraw %}
+{% iiif &lt;imagename&gt; %}
 </code></pre>
 
 <p>(Using the base name, without file extension, of one of the images you put in the <code>_iiif</code> directory) </p>
@@ -108,7 +108,7 @@ title: jekyll-iiif demo
 
 <p>Tiles are stored in a directory at <code>tiles/images/&lt;filename&gt;</code>, and will be copied to the Jekyll site as static files. Tiles are only generated if their target directory doesn't already exist. To force tiles to be regenerated, therefore, just delete the <code>tiles</code> directory.</p>
 
-<p>Instead of specifying the image name in the <code>iiif</code> call, you can put it in the page yaml header as "iiif_image: imagename" (again without the filename extension), and invoke it simply with <code>{% raw %}{% iiif %}{% endraw %}</code>. </p>
+<p>Instead of specifying the image name in the <code>iiif</code> call, you can put it in the page yaml header as "iiif_image: imagename" (again without the filename extension), and invoke it simply with <code>{% iiif %}</code>. </p>
 
 <p>A page can include more than one IIIF image.</p>
 
@@ -127,45 +127,45 @@ title: jekyll-iiif demo
 layout: default
 ---
 
-{% raw %}{% capture the_collection %}{% endraw %}{% raw %}{{page.collection}}{% endraw %}{% raw %}{% endcapture %}{% endraw %}
-  {% raw %}{% if page.collection %}{% endraw %}
-    {% raw %}{% assign documents = site[the_collection] %}{% endraw %}
-  {% raw %}{% endif %}{% endraw %}
-{% raw %}{% for link in documents  %}{% endraw %}
-  {% raw %}{% if link.title == page.title %}{% endraw %}
-    {% raw %}{% unless forloop.first %}{% endraw %}
-      {% raw %}{% assign prevurl = prev.url %}{% endraw %}
-      {% raw %}{% assign prevtitle = prev.title %}{% endraw %}
-    {% raw %}{% endunless %}{% endraw %}
-    {% raw %}{% unless forloop.last %}{% endraw %}
-      {% raw %}{% assign next = documents[forloop.index] %}{% endraw %}
-      {% raw %}{% assign nexturl = next.url %}{% endraw %}
-      {% raw %}{% assign nexttitle = next.title %}{% endraw %}
-    {% raw %}{% endunless %}{% endraw %}
-  {% raw %}{% endif %}{% endraw %}
-  {% raw %}{% assign prev = link %}{% endraw %}
-{% raw %}{% endfor %}{% endraw %}
+{% capture the_collection %}{{page.collection}}{% endcapture %}
+  {% if page.collection %}
+    {% assign documents = site[the_collection] %}
+  {% endif %}
+{% for link in documents  %}
+  {% if link.title == page.title %}
+    {% unless forloop.first %}
+      {% assign prevurl = prev.url %}
+      {% assign prevtitle = prev.title %}
+    {% endunless %}
+    {% unless forloop.last %}
+      {% assign next = documents[forloop.index] %}
+      {% assign nexturl = next.url %}
+      {% assign nexttitle = next.title %}
+    {% endunless %}
+  {% endif %}
+  {% assign prev = link %}
+{% endfor %}
 
 &lt;div class="prevnext"&gt;
-{% raw %}{% if prevurl %}{% endraw %}Previous: &lt;a href="{% raw %}{{site.baseurl}}{% endraw %}{% raw %}{{prevurl}}{% endraw %}" class="prev"&gt;{% raw %}{{prevtitle}}{% endraw %}&lt;/a&gt;{% raw %}{% endif %}{% endraw %}&lt;br /&gt;
+{% if prevurl %}Previous: &lt;a href="{{site.baseurl}}{{prevurl}}" class="prev"&gt;{{prevtitle}}&lt;/a&gt;{% endif %}&lt;br /&gt;
 
-{% raw %}{% if nexturl %}{% endraw %}Next: &lt;a href="{% raw %}{{site.baseurl}}{% endraw %}{% raw %}{{nexturl}}{% endraw %}" class="next"&gt;{% raw %}{{nexttitle}}{% endraw %}&lt;/a&gt;{% raw %}{% endif %}{% endraw %}
+{% if nexturl %}Next: &lt;a href="{{site.baseurl}}{{nexturl}}" class="next"&gt;{{nexttitle}}&lt;/a&gt;{% endif %}
 &lt;/div&gt;
 
 &lt;article class="post"&gt;
 
   &lt;header class="post-header"&gt;
-    &lt;h1 class="post-title"&gt;{% raw %}{{ page.title }}{% endraw %}&lt;/h1&gt;
+    &lt;h1 class="post-title"&gt;{{ page.title }}&lt;/h1&gt;
   &lt;/header&gt;
 
   &lt;div class="post-content"&gt;
-    {% raw %}{% iiif %}{% endraw %}
-    {% raw %}{{ content }}{% endraw %}
+    {% iiif %}
+    {{ content }}
   &lt;/div&gt;
 &lt;/article&gt;
 </code></pre>
 
-<p>The important thing is that the layout must contain the <code>{% raw %}{% iiif %}{% endraw %}</code> tag, which will trigger the display of the image that is specified in the page's <code>iiif_image</code> yaml tag. (The presentation of previous and next links is based on <a href="https://gist.github.com/budparr/3e637e575471401d01ec">this</a>).</p>
+<p>The important thing is that the layout must contain the <code>{% iiif %}</code> tag, which will trigger the display of the image that is specified in the page's <code>iiif_image</code> yaml tag. (The presentation of previous and next links is based on <a href="https://gist.github.com/budparr/3e637e575471401d01ec">this</a>).</p>
 
 <p>When you start the server again, you can visit the collection at <a href="http://127.0.0.1:4000/iiif_collection/">http://127.0.0.1:4000/iiif_collection/</a></p>
 
