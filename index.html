@@ -1,0 +1,217 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Jekyll-iiif by pbinkley</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Jekyll-iiif</h1>
+        <p class="header">Jekyll plugin to embed static IIIF images in jekyll pages</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/pbinkley/jekyll-iiif/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/pbinkley/jekyll-iiif/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/pbinkley/jekyll-iiif">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/pbinkley">pbinkley</a></p>
+
+
+      </header>
+      <section>
+        <p>This is a first stab at a <a href="https://jekyllrb.com/">Jekyll</a> plugin that generates static tiles and a IIIF <a href="http://iiif.io/api/image/2.1/">Image API</a> <code>info.json</code> file for images that will be displayed in the Jekyll site. It uses <a href="https://github.com/cmoa/iiif_s3">iiif_s3</a> and incorporates the <a href="https://openseadragon.github.io/">OpenSeadragon</a> and <a href="http://projectmirador.org/">Mirador</a> viewers. </p>
+
+<p>Demo: <a href="https://www.wallandbinkley.com/projects/2016/jekyll-iiif-demo/">Council of Constance</a></p>
+
+<p>To use it:</p>
+
+<ul>
+<li>Install <a href="https://jekyllrb.com/">Jekyll</a>
+</li>
+<li>Create a Jekyll instance with <code>jekyll new</code>
+</li>
+<li>
+<p>Within your Jekyll instance:</p>
+
+<ul>
+<li>
+<p>Create a Gemfile if there isn't one there already, and add to it:</p>
+
+<pre><code>gem 'jekyll-iiif', :github =&gt; 'pbinkley/jekyll-iiif'
+gem 'iiif_s3', :github =&gt; 'cmoa/iiif_s3'
+</code></pre>
+</li>
+<li><p>Add the jekyll-iiif gem to the <code>_config.yml</code>: <code>gems: [jekyll-iiif]</code> or add <code>- jekyll-iiif</code> to an existing list of gems</p></li>
+<li>Run <code>bundle install</code> to install the gem and dependencies. If necessary, install <code>bundler</code> with <code>gem install bundler</code>.</li>
+</ul>
+</li>
+</ul>
+
+<h2>
+<a id="add-images" class="anchor" href="#add-images" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Add images</h2>
+
+<pre><code>- Create a directory ```_iiif``` and put source images into subdirectories within it (nice big high-resolution images are best, to show off what IIIF can do). The names of the subdirectories become the labels of Jekyll collections.
+- add those subdirectories to the collections in ```_config.yml```:
+</code></pre>
+
+<pre><code>collections:
+  narrenschiff:
+    output: true
+    iiif: true
+    paged: true
+  iiif_images:
+    output: true
+    iiif: true
+
+defaults:
+  - scope:
+      path: ""
+      type: iiif_collection
+    values:
+      layout: iiif_image
+</code></pre>
+
+<pre><code>- set ```paged: true``` if the collection represents pages in a book; leave it out for loose, independent images.
+- when you build the Jekyll site, ```jekyll-iiif``` will create pages for each of the collections (see below).
+</code></pre>
+
+<h2>
+<a id="serve-single-image" class="anchor" href="#serve-single-image" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Serve single image</h2>
+
+<p>To serve a single image, create a Markdown page such as <code>iiif.md</code>, containing a yaml header and a call to the <code>iiif</code> plugin, like this:</p>
+
+<pre><code>---
+title: jekyll-iiif demo
+---
+
+{% raw %}{% iiif &lt;imagename&gt; %}{% endraw %}
+</code></pre>
+
+<p>(Using the base name, without file extension, of one of the images you put in the <code>_iiif</code> directory) </p>
+
+<p>Render and serve the site with <code>jekyll s</code>. Tiles and IIIF artefacts will be generated for images that need them.</p>
+
+<p>Visit the page at <a href="http://127.0.0.1:4000/iiif.html">http://127.0.0.1:4000/iiif.html</a>. You should see your image displayed by OpenSeadragon in a deeply-zoomable tiled IIIF display.</p>
+
+<p>Tiles are stored in a directory at <code>tiles/images/&lt;filename&gt;</code>, and will be copied to the Jekyll site as static files. Tiles are only generated if their target directory doesn't already exist. To force tiles to be regenerated, therefore, just delete the <code>tiles</code> directory.</p>
+
+<p>Instead of specifying the image name in the <code>iiif</code> call, you can put it in the page yaml header as "iiif_image: imagename" (again without the filename extension), and invoke it simply with <code>{% raw %}{% iiif %}{% endraw %}</code>. </p>
+
+<p>A page can include more than one IIIF image.</p>
+
+<p>The size of the IIIF viewer div is hardcoded in <code>lib/_includes/iiif_instance.html</code> as <code>width: 100%; height: 500px</code>. It can be overriden by overriding <code>iiif_instance.html</code> (i.e. by making a modified copy in the <code>_includes</code> directory of your Jekyll instance), or simply by applying css rules to <code>div.iiif_instance</code>.</p>
+
+<h2>
+<a id="collection" class="anchor" href="#collection" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Collection</h2>
+
+<p>You can have jekyll-iiif generate pages for a <a href="https://jekyllrb.com/docs/collections/">Collection</a> based one-to-one on the images you provide. The idea is to make it easy to publish a set of images with minimal overhead: you can drop all the images in a subdirectory of the <code>_iiif</code> directory, and the necessary skeleton pages will be created for you. You can then edit those pages as needed.</p>
+
+<ul>
+<li>notice that the automatically generated pages use layout <code>iiif_image</code>; you need to create this as a file in <code>_layouts/iiif_image.html</code>:</li>
+</ul>
+
+<pre><code>---
+layout: default
+---
+
+{% raw %}{% capture the_collection %}{% endraw %}{% raw %}{{page.collection}}{% endraw %}{% raw %}{% endcapture %}{% endraw %}
+  {% raw %}{% if page.collection %}{% endraw %}
+    {% raw %}{% assign documents = site[the_collection] %}{% endraw %}
+  {% raw %}{% endif %}{% endraw %}
+{% raw %}{% for link in documents  %}{% endraw %}
+  {% raw %}{% if link.title == page.title %}{% endraw %}
+    {% raw %}{% unless forloop.first %}{% endraw %}
+      {% raw %}{% assign prevurl = prev.url %}{% endraw %}
+      {% raw %}{% assign prevtitle = prev.title %}{% endraw %}
+    {% raw %}{% endunless %}{% endraw %}
+    {% raw %}{% unless forloop.last %}{% endraw %}
+      {% raw %}{% assign next = documents[forloop.index] %}{% endraw %}
+      {% raw %}{% assign nexturl = next.url %}{% endraw %}
+      {% raw %}{% assign nexttitle = next.title %}{% endraw %}
+    {% raw %}{% endunless %}{% endraw %}
+  {% raw %}{% endif %}{% endraw %}
+  {% raw %}{% assign prev = link %}{% endraw %}
+{% raw %}{% endfor %}{% endraw %}
+
+&lt;div class="prevnext"&gt;
+{% raw %}{% if prevurl %}{% endraw %}Previous: &lt;a href="{% raw %}{{site.baseurl}}{% endraw %}{% raw %}{{prevurl}}{% endraw %}" class="prev"&gt;{% raw %}{{prevtitle}}{% endraw %}&lt;/a&gt;{% raw %}{% endif %}{% endraw %}&lt;br /&gt;
+
+{% raw %}{% if nexturl %}{% endraw %}Next: &lt;a href="{% raw %}{{site.baseurl}}{% endraw %}{% raw %}{{nexturl}}{% endraw %}" class="next"&gt;{% raw %}{{nexttitle}}{% endraw %}&lt;/a&gt;{% raw %}{% endif %}{% endraw %}
+&lt;/div&gt;
+
+&lt;article class="post"&gt;
+
+  &lt;header class="post-header"&gt;
+    &lt;h1 class="post-title"&gt;{% raw %}{{ page.title }}{% endraw %}&lt;/h1&gt;
+  &lt;/header&gt;
+
+  &lt;div class="post-content"&gt;
+    {% raw %}{% iiif %}{% endraw %}
+    {% raw %}{{ content }}{% endraw %}
+  &lt;/div&gt;
+&lt;/article&gt;
+</code></pre>
+
+<p>The important thing is that the layout must contain the <code>{% raw %}{% iiif %}{% endraw %}</code> tag, which will trigger the display of the image that is specified in the page's <code>iiif_image</code> yaml tag. (The presentation of previous and next links is based on <a href="https://gist.github.com/budparr/3e637e575471401d01ec">this</a>).</p>
+
+<p>When you start the server again, you can visit the collection at <a href="http://127.0.0.1:4000/iiif_collection/">http://127.0.0.1:4000/iiif_collection/</a></p>
+
+<p>A directory <code>_&lt;directoryname&gt;</code> (note the leading underscore) will be created for each collection if it doesn't already exist. This will contain the markdown files corresponding to the images in <code>_iiif</code> (e.g. image <code>page001.tiff</code> triggers a file <code>page001.md</code>). Files will be created by <code>jekyll-iiif</code> for any image that doesn't already have one, so it's easy to create the necessary skeleton pages and then edit them as needed. The default skeleton pages just contain the yaml header, populated with the filename:</p>
+
+<pre><code>---
+layout: iiif
+title: 'page001'
+iiif_image: 'iiif_collection-1'
+---
+</code></pre>
+
+<p>(Note that the title is from the original image name, but the <code>iiif_image</code> uses the new name provided by <code>iiif_s3</code>, based on the collection name.) This markdown file can be modified to provide the proper title, add text to be displayed under the IIIF viewer, or anything else Jekyll can do. The file won't be overwritten by jekyll-iiif.</p>
+
+<p>A page of thumbnails for the images in the collection can be generated using the <code>iiif_gallery</code> tag. One is generated automatically for each collection, providing the <code>index.html</code> in the collection directory. Each image is represented by a thumbnail; the formatting can be controlled by CSS applied to <code>div.iiif_thumbnail</code>. Clicking a thumbnail will take you to the page for that image. Each thumbnail is accompanied by a IIIF logo, which supports <a href="http://zimeon.github.io/iiif-dragndrop/">drag-and-drop</a> to another IIIF viewer.</p>
+
+<h2>
+<a id="manifests" class="anchor" href="#manifests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Manifests</h2>
+
+<p>Thanks to <code>iiif_s3</code>, Presentation Manifests are created for each collection or image. This allows external IIIF clients to import the item and display it. All images belong to collections, but collections can be paged or unpaged. Paged collections are like books: the images are viewable as parts of a single item. Unpaged collections treat images as independent items. The status of a collection is controlled by the <code>paged</code> element in the collection's metadata in <code>_config.yml</code>: <code>paged: true</code> or <code>paged: false</code>. Paged collections get a single manifest containing all pages, unpaged collections get a separate manifest for each image.</p>
+
+<p>To serve manifests to external clients over HTTP it is necessary to add a <a href="http://enable-cors.org/index.html">CORS header</a>. In the jekyll development environment, this is achieved by adding this configuration to <code>_config.yml</code>:</p>
+
+<pre><code>webrick:
+  headers:
+    "Access-Control-Allow-Origin": "*"
+</code></pre>
+
+<p>In a production Apache environment, add <code>Header set Access-Control-Allow-Origin "*"</code> to a <code>.htaccess</code> file in the root of the jekyll deployment.</p>
+
+<p>In either case you can find the manifest at <code>tiles/&lt;name&gt;/manifest.json</code>. You can paste its url into a demo such as <a href="http://projectmirador.org/demo/">Mirador</a>.</p>
+
+<p>Note that the manifest must include absolute urls to all IIIF resources, since it must be usable outside of the original site. This is awkward when moving between development and production jekyll environments. <code>jekyll-iiif</code> will use the default development host <code>http://127.0.0.1:4000</code> when building the manifest, unless the <code>JEKYLL_ENV</code> environment variable is set to "production". In that case it will use the <code>url</code> property set in <code>_config.yml</code>. However, <code>iiif_s3</code> won't be aware of the change, and won't regenerate the manifests when the environment changes. When changing environments, therefore, it is currently necessary to delete the <code>tiles</code> directory to force the regeneration of all the tiles and manifests. </p>
+
+<h2>
+<a id="next-steps" class="anchor" href="#next-steps" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Next steps</h2>
+
+<ul>
+<li>enable populating the <a href="http://iiif.io/api/presentation/2.0/#manifest">Presentation API manifests</a> that IIIF_S3 generates with metadata for the collection</li>
+<li>develop <code>_include</code> files for other IIIF viewers beside OpenSeadragon and Mirador</li>
+<li>explore using Jekyll theme to make it easier to use default _includes or override them</li>
+</ul>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
