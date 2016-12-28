@@ -71,6 +71,11 @@ gem 'iiif_s3', :github =&gt; 'cmoa/iiif_s3'
     output: true
     iiif: true
     paged: true
+    fields:
+      label: "Sebastian Brant, Aff-ghebeelde narren speel-schuyt, verciert met meer als hondert schoone figueren nae den aerdt van veelderley sotten die op aerden syn: bewesen met stichtelijcke exempelen, so uyt de H. Schrift als oock uyt de kerckelijcke oudt-vaders ende andere schrijvers meer, tot dienste van een yegelijcken"
+      description: "Ghedruckt tot Leyden : By Henrick Lodewicxsz. van Haestens"
+      attribution: "jekyll-iiif demo"
+      logo: "http://127.0.0.1:4000/jekyll-iiif-demo/logo.jpg"
   iiif_images:
     output: true
     iiif: true
@@ -85,6 +90,7 @@ defaults:
 
 <ul>
 <li>set <code>paged: true</code> if the collection represents pages in a book; leave it out for loose, independent images.</li>
+<li>populate the metadata fields (as in the example); these values will be used to populate the corresponding fields in the manifest</li>
 <li>when you build the Jekyll site, <code>jekyll-iiif</code> will create pages for each of the collections (see below).</li>
 </ul>
 
@@ -204,9 +210,9 @@ iiif_image: 'iiif_collection-1'
 <a id="next-steps" class="anchor" href="#next-steps" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Next steps</h2>
 
 <ul>
-<li>enable populating the <a href="http://iiif.io/api/presentation/2.0/#manifest">Presentation API manifests</a> that IIIF_S3 generates with metadata for the collection</li>
 <li>develop <code>_include</code> files for other IIIF viewers beside OpenSeadragon and Mirador</li>
 <li>explore using Jekyll theme to make it easier to use default _includes or override them</li>
+<li>look into hosting tiles on S3, the way <code>iiif_s3</code> is intended to</li>
 </ul>
       </section>
       <footer>
