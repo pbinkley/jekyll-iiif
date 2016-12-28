@@ -41,6 +41,7 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 			if thiscoll == nil
 				Jekyll.logger.error("IIIF:", "Collection " + collname + " not found in _config.yml")
 			else
+				fields = thiscoll[1].metadata["fields"]
 				if thiscoll[1].metadata["paged"]
 					opts[:id] = collname
 					opts[:page_number] = counter.to_s.rjust(4, "0")
@@ -49,10 +50,15 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 					opts[:section] = counter.to_s
 					opts[:section_label] = "p. " + counter.to_s
 
-					opts[:label] = "This is the label" 
-					opts[:description] = "This is the description" 
-					opts[:attribution] = "This is the attribution" 
-					opts[:logo] = "https://www.wallandbinkley.com/test.jpg" 
+					allowablefields = site.config["iiif_allowablefields"]
+					fields.each do |field|
+						if allowablefields.include? field[0]
+							opts[field[0]] = field[1]
+						else
+							Jekyll.logger.error("IIIF:", "Collection metadata for " + collname + " includes bad field '" + field[0] + "'")
+						end
+					end
+
 					opts[:path] = imagefile
 				else
 					opts[:id] = basename
