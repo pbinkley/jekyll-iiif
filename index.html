@@ -34,11 +34,22 @@
 
 <p>Demo: <a href="https://www.wallandbinkley.com/projects/2016/jekyll-iiif-demo/">Ship of Fools</a></p>
 
-<p>To use it:</p>
+<h2>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Quick Start</h2>
+
+<ol>
+<li>Create a new <a href="https://jekyllrb.com/">Jekyll</a> instance in a local directory.</li>
+<li>Download the <a href="jekyll-iiif-demo.zip">demo package</a> (containing some images from Internet Archive and Wikipedia and other configuration files) and unzip it into your Jekyll directory. It will overwrite your <code>_config.yml</code> and other files.</li>
+<li>Run <code>bundle install</code> to install the needed gems (<code>jekyll-iiif</code> and <code>iiif_s3</code>).</li>
+<li>Run <code>jekyll serve</code> to generate the site and start serving it.</li>
+<li>Visit the site at <a href="http://127.0.0.1:4000/jekyll-iiif-demo/">http://127.0.0.1:4000/jekyll-iiif-demo/</a>. It will be the same as the Ship of Fools demo site above.</li>
+</ol>
+
+<h2>
+<a id="use" class="anchor" href="#use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Use</h2>
 
 <ul>
-<li>Install <a href="https://jekyllrb.com/">Jekyll</a>
-</li>
+<li>Install Jekyll</li>
 <li>Create a Jekyll instance with <code>jekyll new</code>
 </li>
 <li>
@@ -126,7 +137,7 @@ title: jekyll-iiif demo
 <p>You can have <code>jekyll-iiif</code> generate pages for a <a href="https://jekyllrb.com/docs/collections/">Collection</a> based one-to-one on the images you provide. The idea is to make it easy to publish a set of images with minimal overhead: you can drop all the images in a subdirectory of the <code>_iiif</code> directory, and the necessary skeleton pages will be created for you. You can then edit those pages as needed.</p>
 
 <ul>
-<li>notice that the automatically generated pages use layout <code>iiif_image</code>; you need to create this as a file in <code>_layouts/iiif_image.html</code>:</li>
+<li>notice that the automatically generated pages use layout <code>iiif_image</code>; you need to create this as a file in <code>_layouts/iiif_image.html</code> (or copy it from the demo package):</li>
 </ul>
 
 <pre><code>---
