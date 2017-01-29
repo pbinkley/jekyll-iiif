@@ -50,8 +50,9 @@ class IIIFGalleryTag < IIIF
 end
 
 def render_gallery(context, basename, manifestid, label, doc, canvas)
+  site = context.registers[:site]
   context.registers[:page]["canvas"] = canvas["@id"]
-  context.registers[:page]["thumbnail"] = canvas["thumbnail"]
+  context.registers[:page]["thumbnail"] = URI(canvas["thumbnail"]).path # get relative url
   context.registers[:page]["manifest"] = manifestid
   context.registers[:page]["thistitle"] = doc.data["title"]
   context.registers[:page]["thiscollection"] = label

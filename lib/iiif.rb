@@ -30,10 +30,10 @@ class IIIF < Liquid::Tag
   end
 
   def render_instance(image, template, context)
-    instancecounter = context.registers[:page]["instancecounter"] + 1 if context.registers[:page]["instancecounter"]
+    instancecounter = context.registers[:page]["instancecounter"] + 1 if context.registers[:page]["instancecounter"] && template != "iiif_thumbnail"
     instancecounter = 1 if instancecounter == nil
     thisimage = lookup(context, image)
-    if instancecounter == 1
+    if instancecounter == 1 && template != "iiif_thumbnail"
       partial = get_include(context, "iiif_topper")
       topper = partial.render(context)
     else
