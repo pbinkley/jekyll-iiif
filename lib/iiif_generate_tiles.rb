@@ -18,6 +18,12 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 
 	FileUtils::mkdir_p 'tiles'
 
+	site.config['env'] = ENV['JEKYLL_ENV'] || 'development'
+	hosturl = "http://127.0.0.1:4000"
+	if site.config["env"] == "production"
+		hosturl = site.config["url"]
+	end
+
 	imagedata = []
 
 	id_counter = 0
@@ -53,7 +59,17 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 					allowablefields = site.config["iiif_allowablefields"]
 					fields.each do |field|
 						if allowablefields.include? field[0]
-							opts[field[0]] = field[1]
+							if field[0] == 'logo'
+								# convert logo to absolute url if necessary
+								logo = field[1]
+								uri = URI(logo)
+								if !uri.host
+									logo = URI.join(hosturl, site.config["baseurl"] + "/", logo)
+								end
+								opts['logo'] = logo
+							else
+								opts[field[0]] = field[1]
+							end
 						else
 							Jekyll.logger.error("IIIF:", "Collection metadata for " + collname + " includes bad field '" + field[0] + "'")
 						end
@@ -71,11 +87,6 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 				imagedata.push(i)
 			end
 		end
-	end
-	site.config['env'] = ENV['JEKYLL_ENV'] || 'development'
-	hosturl = "http://127.0.0.1:4000"
-	if site.config["env"] == "production"
-		hosturl = site.config["url"]
 	end
 	builder = IiifS3::Builder.new({
 		:base_url => hosturl + site.baseurl + "/tiles",
