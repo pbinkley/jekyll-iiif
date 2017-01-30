@@ -15,6 +15,7 @@
      'id': 'viewer',
      'layout': '1x1',
      'data': [ {{ page.iiif_collections }} ],
+     'buildPath': '{{ site.baseurl }}/iiif_viewer/mirador/',
      'windowObjects': [{
      	'loadedManifest': '{{ site.url }}{{ site.baseurl }}/tiles/{{ page.thismanifest }}/manifest.json', 
      	'viewType': 'BookView'
