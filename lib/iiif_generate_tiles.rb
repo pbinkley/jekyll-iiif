@@ -80,6 +80,7 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 					opts[:id] = basename
 					opts[:is_document] = true
 					opts[:path] = imagefile
+					opts[:label] = site.config["title"] + " - " + collname + " - " + basename
 				end
 
 				i = IiifS3::ImageRecord.new(opts)
