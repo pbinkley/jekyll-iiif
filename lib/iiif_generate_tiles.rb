@@ -1,20 +1,17 @@
 require 'find'
 require 'iiif_s3'
 
-Jekyll::Hooks.register :site, :after_reset do |site|
+class TileGenerator < Jekyll::Command
+  class << self
+    def init_with_program(prog)
+      prog.command(:iiif) do |c|
+        c.syntax "iiif"
+        c.description 'Process IIIF derivatives.'
 
-	# if there is no iiif_viewer dir in jekyll source, copy from plugin lib
-    unless File.directory?(site.source + "/iiif_viewer")
-	    spec = Gem::Specification.find_by_name("jekyll-iiif")
-	    lib_path = spec.full_gem_path() + "/lib"
-    	Find.find(lib_path + "/iiif_viewer") do |file|
-    		if File.file?(file)
-	    		# get relative path from site.source
-	    		file = Pathname(file[lib_path.length..-1])
-    			site.static_files << Jekyll::StaticFile.new(site, lib_path, file.dirname.to_s, file.basename.to_s)
-    		end
-    	end
-	end
+        c.action do |args, options|
+
+    jekyll_options = configuration_from_options(options)
+    site = Jekyll::Site.new(jekyll_options)
 
 	FileUtils::mkdir_p 'tiles'
 
@@ -95,5 +92,14 @@ Jekyll::Hooks.register :site, :after_reset do |site|
 	})
 	builder.load(imagedata)
 	builder.process_data()
+
+end
+
+end
+  end
+
+
+
+end
 
 end
