@@ -1,5 +1,7 @@
 require 'find'
+require 'fileutils'
 require 'iiif_s3'
+require 'pry'
 
 class TileGenerator < Jekyll::Command
   class << self
@@ -7,17 +9,23 @@ class TileGenerator < Jekyll::Command
       prog.command(:iiif) do |c|
         c.syntax "iiif"
         c.description 'Process IIIF derivatives.'
-
+        c.option "verbose", "-V", "--verbose", "Print verbose output."
+        c.option "iiif_regenerate_manifests", "-m", "--manifests", "Regenerate all manifests."
+ 
         c.action do |args, options|
           jekyll_options = configuration_from_options(options)
           site = Jekyll::Site.new(jekyll_options)
 
           FileUtils::mkdir_p 'tiles'
 
-          site.config['env'] = ENV['JEKYLL_ENV'] || 'development'
-          hosturl = "http://127.0.0.1:4000"
-          if site.config["env"] == "production"
-            hosturl = site.config["url"]
+          hosturl = 'IIIF_URL'
+          
+          # trigger regeneration of manifests by deleting old ones
+          if options["iiif_regenerate_manifests"]
+              Jekyll.logger.debug("IIIF:", "Deleting manifests to trigger regeneration")
+              Find.find('tiles') do |path|
+                File.delete(path) if path =~ /.*\/manifest\.json$/
+              end
           end
 
           imagedata = []
@@ -27,6 +35,7 @@ class TileGenerator < Jekyll::Command
           imagedirs.each do |imagedir|
             id_counter = id_counter + 1
             collname = File.basename(imagedir, ".*")
+            Jekyll.logger.debug("IIIF:", "Collection " + collname)
 
             thiscoll = nil
             site.collections.each do |coll|
@@ -40,6 +49,7 @@ class TileGenerator < Jekyll::Command
               counter = 1
               imagefiles.each do |imagefile|
                 basename = File.basename(imagefile, ".*")
+                Jekyll.logger.debug("IIIF:", "Image " + basename)
 
                 # TODO populate values for :label etc. from _config.yml
                 opts = {}
@@ -80,6 +90,8 @@ class TileGenerator < Jekyll::Command
                 end
 
                 i = IiifS3::ImageRecord.new(opts)
+                Jekyll.logger.debug("IIIF:", "ImageReocrd " + i.inspect)
+
                 counter = counter + 1
                 imagedata.push(i)
               end
@@ -95,4 +107,29 @@ class TileGenerator < Jekyll::Command
       end
     end
   end
+end
+
+Jekyll::Hooks.register :site, :post_write do |site|
+
+site.config['env'] = ENV['JEKYLL_ENV'] || 'development'
+hosturl = "http://127.0.0.1:4000"
+if site.config["env"] == "production"
+    hosturl = site.config["url"]
+end
+
+Jekyll.logger.debug("IIIF:", "deploy tiles with hosturl " + hosturl)
+Find.find('tiles') do |file|
+  if File.file?(file)
+    outfilepath = site.dest + '/' + file 
+    FileUtils.mkdir_p(File.dirname(outfilepath))
+    if file =~ /.*\.json$/
+      text = File.read(file)
+      new_contents = text.gsub(/IIIF_URL/, site.config['iiif_url'])
+      File.open(outfilepath, "w") { |outfile| outfile.puts new_contents }
+    else
+        FileUtils.cp(file, outfilepath)
+    end
+  end
+end
+
 end
