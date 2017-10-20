@@ -1,5 +1,6 @@
 require 'find'
 require 'fileutils'
+require 'pathname'
 require 'iiif_s3'
 require 'pry'
 
@@ -16,14 +17,14 @@ class TileGenerator < Jekyll::Command
           jekyll_options = configuration_from_options(options)
           site = Jekyll::Site.new(jekyll_options)
 
-          FileUtils::mkdir_p 'tiles'
+          FileUtils::mkdir_p site.source + '/tiles'
 
           hosturl = 'IIIF_URL'
           
           # trigger regeneration of manifests by deleting old ones
           if options["iiif_regenerate_manifests"]
               Jekyll.logger.debug("IIIF:", "Deleting manifests to trigger regeneration")
-              Find.find('tiles') do |path|
+              Find.find(site.source + '/tiles') do |path|
                 File.delete(path) if path =~ /.*\/manifest\.json$/
               end
           end
@@ -31,7 +32,7 @@ class TileGenerator < Jekyll::Command
           imagedata = []
 
           id_counter = 0
-          imagedirs = Dir["./_iiif/*"].sort!
+          imagedirs = Dir[site.source + "/_iiif/*"].sort!
           imagedirs.each do |imagedir|
             id_counter = id_counter + 1
             collname = File.basename(imagedir, ".*")
@@ -90,7 +91,7 @@ class TileGenerator < Jekyll::Command
                 end
 
                 i = IiifS3::ImageRecord.new(opts)
-                Jekyll.logger.debug("IIIF:", "ImageReocrd " + i.inspect)
+                Jekyll.logger.debug("IIIF:", "ImageRecord " + i.inspect)
 
                 counter = counter + 1
                 imagedata.push(i)
@@ -112,19 +113,22 @@ end
 Jekyll::Hooks.register :site, :post_write do |site|
 
 site.config['env'] = ENV['JEKYLL_ENV'] || 'development'
-hosturl = "http://127.0.0.1:4000"
+hosturl = 'http://127.0.0.1:' + site.config['port']
 if site.config["env"] == "production"
     hosturl = site.config["url"]
 end
 
 Jekyll.logger.debug("IIIF:", "deploy tiles with hosturl " + hosturl)
-Find.find('tiles') do |file|
-  if File.file?(file)
-    outfilepath = site.dest + '/' + file 
+
+sourcepath = Pathname.new(site.source)
+
+Find.find(site.source + '/tiles') do |file|
+if File.file?(file)
+    outfilepath = site.dest + '/' + (Pathname.new(file).relative_path_from(sourcepath)).to_s 
     FileUtils.mkdir_p(File.dirname(outfilepath))
     if file =~ /.*\.json$/
       text = File.read(file)
-      new_contents = text.gsub(/IIIF_URL/, site.config['iiif_url'])
+      new_contents = text.gsub(/IIIF_URL/, hosturl)
       File.open(outfilepath, "w") { |outfile| outfile.puts new_contents }
     else
         FileUtils.cp(file, outfilepath)
