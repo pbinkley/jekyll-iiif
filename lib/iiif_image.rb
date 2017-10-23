@@ -1,12 +1,12 @@
+# tag
 class IIIFTag < IIIF
-
   def initialize(tag_name, image, tokens)
     super
     @image = image.strip
   end
 
   def render(context)
-    render_instance(@image, "iiif_image", context)
+    render_instance(@image, 'iiif_image', context)
   end
 end
 
