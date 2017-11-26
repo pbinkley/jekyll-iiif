@@ -16,7 +16,7 @@ Jekyll::Hooks.register :site, :after_reset do |site|
     next unless collection.metadata['iiif'] && collection.metadata['output']
     label = collection.label
     title = collection.metadata['title'] ? collection.metadata['title'] : collection.label
-    targetdir = '_' + label
+    targetdir = 'galleries/_' + label
     FileUtils::mkdir_p targetdir
     imagefiles = Dir['_iiif/' + label + '/*'].sort!
     counter = 1
