@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'jekyll-iiif'
-  s.version     = '0.3.9'
-  s.date        = '2017-10-20'
+  s.version     = '0.3.10'
+  s.date        = '2017-11-27'
   s.summary     = "Jekyll plugin to embed static IIIF images in jekyll pages"
   s.description = "Using IIIF_S3, it generates static IIIF tiles and other artefacts and provides Liquid tags to embed them in Jekyll pages."
   s.authors     = ["Peter Binkley"]

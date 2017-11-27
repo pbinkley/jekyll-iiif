@@ -34,13 +34,13 @@ Jekyll::Hooks.register :site, :after_reset do |site|
         pagepath = targetdir + '/' + basename + '.md'
       end
       unless File.exist?(pagepath)
-        File.open(pagepath, 'w') { |file| file.write('---\nlayout: iiif\ntitle: \'' + basename + '\'\niiif_image: \'' + imagename + '\'\n---\n\n') }
+        File.open(pagepath, 'w') { |file| file.write("---\nlayout: iiif\ntitle: \"" + basename + "\"\niiif_image: \"" + imagename + "\"\n---\n\n") }
       end
       counter += 1
     end
     pagepath = targetdir[1, targetdir.length - 1]
     unless File.exist?(pagepath + '.md')
-      File.open(pagepath + '.md', 'w') { |file| file.write('---\nlayout: page\ntitle: \'' + title + ' Gallery\'\npermalink: ' + pagepath + '/index.html\n---\n\n{% iiif_gallery ' + label + ' %}\n') }
+      File.open(pagepath + '.md', 'w') { |file| file.write("---\nlayout: page\ntitle: \"" + title + " Gallery\"\npermalink: " + pagepath + "/index.html\n---\n\n{% iiif_gallery " + label + " %}\n") }
     end
   end
 end

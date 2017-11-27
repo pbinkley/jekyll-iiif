@@ -19,7 +19,9 @@ class TileGenerator < Jekyll::Command
 
           FileUtils::mkdir_p site.source + '/tiles'
 
-          hosturl = 'IIIF_URL'
+          # placeholder value, which will be replaced when tiles
+          # are deployed to target
+          iiifurl = 'IIIF_URL'
 
           # trigger regeneration of manifests by deleting old ones
           if options['iiif_regenerate_manifests']
@@ -71,9 +73,9 @@ class TileGenerator < Jekyll::Command
                         logo = field[1]
                         uri = URI(logo)
                         Jekyll.logger.debug('IIIF:', 'logo uri: ' + uri.to_s)
-                        Jekyll.logger.debug('IIIF:', 'hosturl: ' + hosturl)
+                        Jekyll.logger.debug('IIIF:', 'iiifurl: ' + iiifurl)
                         unless uri.host
-                          logo = hosturl + site.config['baseurl'] + '/' + logo
+                          logo = iiifurl + site.config['baseurl'] + '/' + logo
                         end
                         opts['logo'] = logo
                       else
@@ -101,7 +103,7 @@ class TileGenerator < Jekyll::Command
             end
           end
           builder = IiifS3::Builder.new(
-            base_url: hosturl + site.baseurl + '/tiles',
+            base_url: iiifurl + site.baseurl + '/tiles',
             output_dir: './tiles'
           )
           builder.load(imagedata)
@@ -113,27 +115,22 @@ class TileGenerator < Jekyll::Command
 end
 
 Jekyll::Hooks.register :site, :post_write do |site|
-  site.config['env'] = ENV['JEKYLL_ENV'] || 'development'
-  hosturl = 'http://127.0.0.1:' + site.config['port']
-  if site.config['env'] == 'production'
-    hosturl = site.config['url']
-  end
+  iiifurl = site.config['iiifurl']
 
-  Jekyll.logger.debug('IIIF:', 'deploy tiles with hosturl ' + hosturl)
+  Jekyll.logger.debug('IIIF:', 'deploy tiles with iiifurl ' + iiifurl)
 
   sourcepath = Pathname.new(site.source)
 
   Find.find(site.source + '/tiles') do |file|
-    if File.file?(file)
-      outfilepath = site.dest + '/' + (Pathname.new(file).relative_path_from(sourcepath)).to_s
-      FileUtils.mkdir_p(File.dirname(outfilepath))
-      if file =~ /.*\.json$/
-        text = File.read(file)
-        new_contents = text.gsub(/IIIF_URL/, hosturl)
-        File.open(outfilepath, 'w') { |outfile| outfile.puts new_contents }
-      else
-        FileUtils.cp(file, outfilepath)
-      end
+    next unless File.file?(file)
+    outfilepath = site.dest + '/' + (Pathname.new(file).relative_path_from(sourcepath)).to_s
+    FileUtils.mkdir_p(File.dirname(outfilepath))
+    if file =~ /.*\.json$/
+      text = File.read(file)
+      new_contents = text.gsub(/IIIF_URL/, iiifurl)
+      File.open(outfilepath, 'w') { |outfile| outfile.puts new_contents }
+    else
+      FileUtils.cp(file, outfilepath)
     end
   end
 end
