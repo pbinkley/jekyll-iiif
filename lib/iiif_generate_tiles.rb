@@ -150,7 +150,7 @@ Jekyll::Hooks.register :site, :post_write do |site|
       new_contents = text.gsub(/IIIF_URL/, iiifurl)
       File.open(outfilepath, 'w') { |outfile| outfile.puts new_contents }
     else
-      FileUtils.cp(file, outfilepath, :preserve = true)
+      FileUtils.cp(file, outfilepath, :preserve => true)
     end
   end
 
