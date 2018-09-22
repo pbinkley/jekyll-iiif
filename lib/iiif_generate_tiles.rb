@@ -160,8 +160,9 @@ Jekyll::Hooks.register :site, :post_write do |site|
     # add annotationlists to canvases in wardiary manifest.json
     manifestFile = site.dest + '/tiles/' + compoundkey + '/manifest.json'
     manifest = JSON.parse(File.read(manifestFile))
-    annotatedPages = compounddata.group_by { |o| o['data']['page'] }.keys
-    manifest['sequences'][0]['canvases'].each do |canvas|
+    annotatedPages = compounddata.group_by { |o| o['canvas'] }.keys
+    annotatedCanvases = manifest['sequences'][0]['canvases'].select { |c| annotatedPages.include? c['@id'].gsub(/.*?(\d*)\.json$/, '\1').to_i }
+    annotatedCanvases.each do |canvas|
       canvasId = URI.parse(canvas['@id'])
       annotationFile = site.dest + '/tiles/' + compoundkey + '/annotation/photos-' + canvasId.path.split('/').last
       canvas['otherContent'] = [{
