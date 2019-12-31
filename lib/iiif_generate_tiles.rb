@@ -24,7 +24,7 @@ class TileGenerator < Jekyll::Command
           jekyll_options = configuration_from_options(options)
           site = Jekyll::Site.new(jekyll_options)
           reader = Jekyll::DataReader.new(site)
-          data = reader.read('_data')
+          data = reader.read('_data-production')
           documents = reader.content['documents']
           tilesdir = site.source + '/' + (site.config['tilesdir'] || 'tiles')
           # binding.pry
